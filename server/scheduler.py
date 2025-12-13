@@ -1,3 +1,6 @@
+import sys
+sys.stdout.reconfigure(encoding='utf-8')
+
 import pandas as pd
 import re
 from ortools.sat.python import cp_model
@@ -5,6 +8,7 @@ import gspread
 from google.oauth2.service_account import Credentials
 import os
 from dotenv import load_dotenv
+import json
 
 load_dotenv()
 
@@ -60,21 +64,21 @@ for column in df.columns[1:]:
         df.at[idx, column] = emps
 
 full_time_emps = get_list_from_cell(worksheet, "I9")
-print(full_time_emps)               # có thể thêm nhiều tên
+# print(full_time_emps)               # có thể thêm nhiều tên
 for column in df.columns[1:]:       # duyệt các ngày (bỏ cột Ca)
     df[column] = df[column].apply(
         lambda lst: sorted(set(lst + full_time_emps))   # bảo đảm duy nhất + sắp xếp
     )
 
-print("Dữ liệu đã chuẩn hóa:")
-print(df)
+# print("Dữ liệu đã chuẩn hóa:")
+# print(df)
 
 # Lấy danh sách tất cả nhân viên
 employees = sorted({emp for col in df.columns[1:] for row in df[col] for emp in row})
 # In danh sách nhân viên
-print("\nDanh sách nhân viên:")
-for emp in employees:
-    print(emp)
+# print("\nDanh sách nhân viên:")
+# for emp in employees:
+#     print(emp)
 
 
 # Giờ mỗi ca (tính theo đơn vị 1/10 giờ để tránh số thực)
@@ -87,9 +91,9 @@ for ca_idx, row in df.iterrows():
         for emp in row[day]:
             registered_hours[emp] += hours_per_shift[ca_idx]
 
-print("\nGiờ đăng ký của mỗi nhân viên:")
-for emp, hours in registered_hours.items():
-    print(f"{emp}: {hours/10} giờ")
+# print("\nGiờ đăng ký của mỗi nhân viên:")
+# for emp, hours in registered_hours.items():
+#     print(f"{emp}: {hours/10} giờ")
 
 # Khởi tạo mô hình
 model = cp_model.CpModel()
@@ -250,12 +254,12 @@ def debug_feasibility(employees, df):
 
 issues = debug_feasibility(employees, df)
 
-if issues:
-    print("⚠️ Có vấn đề về ràng buộc khiến mô hình có thể vô nghiệm:")
-    for e in issues:
-        print(" -", e)
-else:
-    print("Không phát hiện lỗi trước solve.")
+# if issues:
+#     print("⚠️ Có vấn đề về ràng buộc khiến mô hình có thể vô nghiệm:")
+#     for e in issues:
+#         print(" -", e)
+# else:
+#     print("Không phát hiện lỗi trước solve.")
 
 
 # Giải mô hình
@@ -263,19 +267,62 @@ solver = cp_model.CpSolver()
 solver.parameters.max_time_in_seconds = 30
 status = solver.Solve(model)
 
-if status in [cp_model.OPTIMAL, cp_model.FEASIBLE]:
-    print("\nKết quả phân ca:")
+
+def run_scheduler():
+    
+    if status not in [cp_model.OPTIMAL, cp_model.FEASIBLE]:
+        return {
+            "status": "error",
+            "message": "Không tìm được lời giải hợp lệ"
+        }
+
+    schedule = {}
     for j in range(n_days):
-        print(f"\nThứ {j + 2}:")
+        day_name = f"Day{j+1}"
+        schedule[day_name] = {}
         for k in range(n_shifts):
-            assigned = [i for i in employees if solver.Value(x[i, j, k])]
-            print(f"{', '.join(assigned)}")
+            schedule[day_name][f"Ca{k+1}"] = [
+                i for i in employees if solver.Value(x[i, j, k])
+            ]
 
-else:
-    print("Không tìm được lời giải hợp lệ.")
+    summary = []
+    for i in employees:
+        assigned = solver.Value(total_hours_assigned[i]) / 10
+        registered = registered_hours[i] / 10
+        ratio = assigned / registered * 100 if registered else 0
 
-print("\nTỉ lệ có ca (%) của từng nhân viên:")
-for i in employees:
-    assigned = solver.Value(total_hours_assigned[i]) / 10.0   # giờ thực
-    ratio = assigned / (registered_hours[i] / 10.0) * 100
-    print(f"{i}: {assigned:.1f}h / {registered_hours[i]/10:.1f}h  = {ratio:.1f}%")
+        summary.append({
+            "name": i,
+            "assigned_hours": round(assigned, 1),
+            "registered_hours": round(registered, 1),
+            "ratio": round(ratio, 1)
+        })
+
+    return {
+        "status": "ok",
+        "schedule": schedule,
+        "summary": summary
+    }
+
+if __name__ == "__main__":
+    result = run_scheduler()
+    print(json.dumps(result, ensure_ascii=False))
+
+
+
+# if status in [cp_model.OPTIMAL, cp_model.FEASIBLE]:
+#     print("\nKết quả phân ca:")
+#     for j in range(n_days):
+#         print(f"\nThứ {j + 2}:")
+#         for k in range(n_shifts):
+#             assigned = [i for i in employees if solver.Value(x[i, j, k])]
+#             print(f"{', '.join(assigned)}")
+
+# else:
+#     print("Không tìm được lời giải hợp lệ.")
+
+# print("\nTỉ lệ có ca (%) của từng nhân viên:")
+# for i in employees:
+#     assigned = solver.Value(total_hours_assigned[i]) / 10.0   # giờ thực
+#     ratio = assigned / (registered_hours[i] / 10.0) * 100
+#     print(f"{i}: {assigned:.1f}h / {registered_hours[i]/10:.1f}h  = {ratio:.1f}%")
