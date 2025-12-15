@@ -7,24 +7,26 @@ from ortools.sat.python import cp_model
 import gspread
 from google.oauth2.service_account import Credentials
 import os
-from dotenv import load_dotenv
 import json
+from dotenv import load_dotenv
 
 load_dotenv()
 
 SHEET_ID = os.getenv("SHEET_ID")
-GOOGLE_APPLICATION_CREDENTIALS = os.getenv("GOOGLE_APPLICATION_CREDENTIALS")
 
+service_account_info = json.loads(
+    os.environ["GOOGLE_SERVICE_ACCOUNT"]
+)
 
-# Kết nối đến Google Sheet
 SCOPES = ['https://www.googleapis.com/auth/spreadsheets.readonly']
 
-creds = Credentials.from_service_account_file(
-    GOOGLE_APPLICATION_CREDENTIALS,
+creds = Credentials.from_service_account_info(
+    service_account_info,
     scopes=SCOPES
 )
 
 client = gspread.authorize(creds)
+
 
 def get_list_from_cell(worksheet, cell):
     result = worksheet.get(cell)
