@@ -10,7 +10,12 @@ app.use(express.json());
 app.post("/api/schedule", (req, res) => {
   const pyPath = path.join(__dirname, "scheduler.py");
 
-  const py = spawn("python", [pyPath]);
+  const PYTHON_CMD = process.env.PYTHON_CMD || "python";
+
+  const py = spawn(PYTHON_CMD, [pyPath], {
+    env: process.env
+  });
+
 
   let output = "";
   let error = "";
