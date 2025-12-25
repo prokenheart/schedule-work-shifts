@@ -1,14 +1,16 @@
 document.getElementById("btnSchedule").onclick = async () => {
-    const res = await fetch("/api/schedule", { method: "POST" });
-    const data = await res.json();
-
-    if (data.status !== "ok") {
-    alert("Sắp ca thất bại");
-    return;
+    try {
+        const res = await fetch("https://prokenheart.pythonanywhere.com/api/schedule");
+        const data = await res.json();
+        if (data.status !== "ok") {
+            alert("Sắp ca thất bại: " + (data.message || ""));
+            return;
+        }
+        renderSchedule(data.schedule);
+        renderSummary(data.summary);
+    } catch (err) {
+        alert("Lỗi kết nối server");
     }
-
-    renderSchedule(data.schedule);
-    renderSummary(data.summary);
 };
   
 function renderSchedule(schedule) {
