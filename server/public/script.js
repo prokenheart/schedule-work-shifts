@@ -14,7 +14,6 @@ document.getElementById("btnSchedule").onclick = async () => {
         renderSummary(summary);
         renderEmployeePool(summary);
         register = data.register;
-        console.log(register);
     } catch (err) {
         alert("Lỗi kết nối server");
     }
