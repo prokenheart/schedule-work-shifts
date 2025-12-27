@@ -7,27 +7,36 @@
 </head>
 <body>
 
-  <h2>Lịch làm việc trong tuần</h2>
+	<h2>Lịch làm việc trong tuần</h2>
 
-  <button id="btnSchedule">Sắp ca</button>
-  <button id="btnExport">Xuất PNG</button>
+	<div class="header-toolbar">
+		<div class="action-buttons">
+			<button id="btnSchedule">Sắp ca</button>
+			<button id="btnExport">Xuất PNG</button>
+		</div>
+
+		<div class="drag-pool-section">
+			<span class="pool-label">Nhân viên (kéo thả):</span>
+			<div id="employee-pool"></div>
+		</div>
+	</div>
 
 
-  <div class="container">
-    <!-- Bên trái: lịch -->
-    <div id="schedule-container">
-      <h3>Lịch làm dưới dạng thời khóa biểu</h3>
-      <table id="schedule-table"></table>
-    </div>
+	<div class="container">
+		<!-- Bên trái: lịch -->
+		<div id="schedule-container">
+			<h3>Lịch làm</h3>
+			<table id="schedule-table"></table>
+		</div>
 
-    <!-- Bên phải: thống kê -->
-    <div id="summary-container">
-      <h3>Danh sách nhân viên & tổng giờ</h3>
-      <table id="summary-table"></table>
-    </div>
-  </div>
+		<!-- Bên phải: thống kê -->
+		<div id="summary-container">
+			<h3>Danh sách nhân viên & tổng giờ</h3>
+			<table id="summary-table"></table>
+		</div>
+	</div>
 
-  <script src="https://cdn.jsdelivr.net/npm/html2canvas@1.4.1/dist/html2canvas.min.js"></script>
-  <script src="script.js"></script>
+	<script src="https://cdn.jsdelivr.net/npm/html2canvas@1.4.1/dist/html2canvas.min.js"></script>
+	<script src="script.js"></script>
 </body>
 </html>

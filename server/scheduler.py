@@ -76,15 +76,10 @@ def run_scheduler():
             lambda lst: sorted(set(lst + full_time_emps))   # bảo đảm duy nhất + sắp xếp
         )
 
-    # print("Dữ liệu đã chuẩn hóa:")
-    # print(df)
+    
 
     # Lấy danh sách tất cả nhân viên
     employees = sorted({emp for col in df.columns[1:] for row in df[col] for emp in row})
-    # In danh sách nhân viên
-    # print("\nDanh sách nhân viên:")
-    # for emp in employees:
-    #     print(emp)
 
 
     # Giờ mỗi ca (tính theo đơn vị 1/10 giờ để tránh số thực)
@@ -278,6 +273,18 @@ def run_scheduler():
             "status": "error",
             "message": "Không tìm được lời giải hợp lệ"
         }
+    
+    register = {}
+
+    n_days = len(df.columns) - 1  # bỏ cột "Ca"
+
+    for day_idx, day in enumerate(df.columns[1:]):
+        day_name = f"Day{day_idx + 1}"
+        register[day_name] = {}
+
+        for ca_idx in range(3):
+            register[day_name][f"Ca{ca_idx + 1}"] = df.at[ca_idx, day]
+
 
     schedule = {}
     for j in range(n_days):
@@ -304,7 +311,8 @@ def run_scheduler():
     return {
         "status": "ok",
         "schedule": schedule,
-        "summary": summary
+        "summary": summary,
+        "register": register
     }
 
 if __name__ == "__main__":
