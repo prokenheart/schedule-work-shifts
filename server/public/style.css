@@ -237,12 +237,12 @@ button:hover {
     }
 
     #schedule-table {
-        font-size: 8px;
+        font-size: 6px;
     }
 
     #schedule-table th, #schedule-table td {
-        font-size: 8px;
-        padding: 0px;
+        font-size: 6px;
+        padding: 2px;
     }
 
     .chip-container {
@@ -250,11 +250,11 @@ button:hover {
     }
 
     .emp-chip {
-        font-size: 6px;
+        font-size: 7px;
         max-width: 100%;
         width: auto;
         padding: 1px 2px;
-        margin: 2px;
+        margin: 3px;
     }
 
     .emp-remove {
@@ -265,6 +265,7 @@ button:hover {
     #employee-pool .emp-chip {
         font-size: 12px;
         padding: 3px 5px;
+        margin: 0px;
     }
 
     #summary-table th, #summary-table td {
