@@ -222,6 +222,10 @@ button:hover {
         font-size: 8px;
     }
 
+    .action-buttons {
+        gap: 8px;
+    }
+
     .header-toolbar {
         flex-direction: column;
         align-items: flex-start;
@@ -242,7 +246,7 @@ button:hover {
     }
 
     .chip-container {
-        min-height: 35px;
+        min-height: 40px;
     }
 
     .emp-chip {
@@ -250,7 +254,7 @@ button:hover {
         max-width: 100%;
         width: auto;
         padding: 1px 2px;
-        margin: 0px;
+        margin: 2px;
     }
 
     .emp-remove {
