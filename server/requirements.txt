@@ -3,3 +3,5 @@ gspread
 google-auth
 ortools
 python-dotenv
+flask
+flask-cors
