@@ -192,6 +192,7 @@ document.addEventListener("dragover", e => {
   
 document.addEventListener("drop", e => {
     const cell = e.target.closest(".shift-cell");
+    const chipContainer = cell.querySelector(".chip-container");
     if (!cell || !draggedName) return;
 
     e.preventDefault();
@@ -203,7 +204,7 @@ document.addEventListener("drop", e => {
         return;
     }
 
-    cell.insertAdjacentHTML("beforeend", renderEmpChip(draggedName));
+    chipContainer.insertAdjacentHTML("beforeend", renderEmpChip(draggedName));
     summary.forEach(e => {
         if (e.name === draggedName) {
             e.assigned_hours += getHoursForShift(cell.dataset.shift);
