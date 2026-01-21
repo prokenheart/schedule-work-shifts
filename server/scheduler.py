@@ -110,10 +110,10 @@ def run_scheduler():
 
 
 
-    # Ràng buộc: mỗi ca đúng 2 người
+    # Ràng buộc: mỗi ca từ 2 người trở xuống
     for j in range(n_days):
         for k in range(n_shifts):
-            model.Add(sum(x[i, j, k] for i in employees) == 2)
+            model.Add(sum(x[i, j, k] for i in employees) <= 2)
 
 
     # Ràng buộc: chỉ gán nếu đã đăng ký
@@ -173,6 +173,18 @@ def run_scheduler():
     # ===> BẮT ĐẦU RÀNG BUỘC MỀM Ở ĐÂY <===
 
     penalties = []
+
+    for j in range(n_days):
+        for k in range(n_shifts):
+            assigned = sum(x[i, j, k] for i in employees)
+
+            # số người thiếu (0,1,2)
+            missing = model.NewIntVar(0, 2, f'missing_{j}_{k}')
+            model.Add(missing == 2 - assigned)
+
+            # penalty: 1 người = 100, 0 người = 200
+            penalties.append((missing, 100))
+
 
 
     for i in employees:
@@ -255,12 +267,12 @@ def run_scheduler():
 
     issues = debug_feasibility(employees, df)
 
-    if issues:
-        print("⚠️ Có vấn đề về ràng buộc khiến mô hình có thể vô nghiệm:")
-        for e in issues:
-            print(" -", e)
-    else:
-        print("Không phát hiện lỗi trước solve.")
+    # if issues:
+    #     print("⚠️ Có vấn đề về ràng buộc khiến mô hình có thể vô nghiệm:")
+    #     for e in issues:
+    #         print(" -", e)
+    # else:
+    #     print("Không phát hiện lỗi trước solve.")
 
 
     # Giải mô hình
