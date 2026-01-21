@@ -3,13 +3,13 @@ var summary;
 
 document.getElementById("btnSchedule").onclick = async () => {
     try {
-        // const res = await fetch("https://prokenheart.pythonanywhere.com/api/schedule");
-        const res = await fetch("http://localhost:3000/api/schedule", {
-            method: "POST",
-            headers: {
-              "Accept": "application/json"
-            }
-          });
+        const res = await fetch("https://prokenheart.pythonanywhere.com/api/schedule");
+        // const res = await fetch("http://localhost:3000/api/schedule", {
+        //     method: "POST",
+        //     headers: {
+        //       "Accept": "application/json"
+        //     }
+        //   });
         const data = await res.json();
         if (data.status !== "ok") {
             alert("Sắp ca thất bại: " + (data.message || ""));
