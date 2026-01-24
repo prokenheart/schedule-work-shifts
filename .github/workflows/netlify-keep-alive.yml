@@ -1,0 +1,30 @@
+name: Netlify Keep Alive (Daily Test)
+
+on:
+  schedule:
+    # chạy mỗi ngày lúc 03:00 UTC (~10:00 sáng giờ VN)
+    - cron: "0 3 * * *"
+  workflow_dispatch:
+
+jobs:
+  keep-alive:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repo (main)
+        uses: actions/checkout@v4
+        with:
+          ref: main
+
+      - name: Setup git
+        run: |
+          git config user.name "netlify-bot"
+          git config user.email "netlify-bot@users.noreply.github.com"
+
+      - name: Create empty commit
+        run: |
+          git commit --allow-empty -m "chore: keep netlify alive (daily test)"
+
+      - name: Push to main
+        run: |
+          git push origin main
