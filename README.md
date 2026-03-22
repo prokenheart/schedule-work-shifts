@@ -6,6 +6,7 @@ based on employee registrations and predefined constraints.
 
 🔗 **Live Demo:**\
 https://schedule-buile.netlify.app/
+Note: For some reasons, this link is not available any more
 
 ------------------------------------------------------------------------
 
